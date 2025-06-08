@@ -1,0 +1,189 @@
+/* Register.module.css */
+.registerPage {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f7fa;
+    padding: 2rem;
+  }
+  
+  .registerContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    max-width: 1000px;
+    width: 100%;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+  
+  .registerIllustration {
+    background: linear-gradient(135deg, #0066cc 0%, #003366 100%);
+    color: white;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .registerIllustration h1 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+  
+  .registerIllustration p {
+    opacity: 0.9;
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .ilustrationImage img {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    display: block;
+  }
+  
+  .registerFormContainer {
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .registerHeader {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  
+  .registerHeader h2 {
+    color: #003366;
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .registerHeader p {
+    color: #666;
+  }
+  
+  .errorMessage {
+    background: #ffebee;
+    color: #d32f2f;
+    padding: 0.8rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .errorIcon {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+  }
+  
+  .registerForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .formLabel {
+    color: #003366;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+  
+  .formInput {
+    padding: 0.8rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+  
+  .formInput:focus {
+    border-color: #0066cc;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+  }
+  
+  .submitButton {
+    background: #0066cc;
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 48px;
+  }
+  
+  .submitButton:hover {
+    background: #0052a3;
+  }
+  
+  .submitButton:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  .spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  .registerFooter {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  .loginLink {
+    color: #0066cc;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .loginLink:hover {
+    text-decoration: underline;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .registerContainer {
+      grid-template-columns: 1fr;
+    }
+    
+    .registerIllustration {
+      display: none;
+    }
+    
+    .registerFormContainer {
+      padding: 2rem;
+    }
+  }
