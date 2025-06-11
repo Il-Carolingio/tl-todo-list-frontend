@@ -1,0 +1,102 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.modal.info {
+  border-top: 4px solid #3498db;
+}
+
+.modal.success {
+  border-top: 4px solid #2ecc71;
+}
+
+.modal.error {
+  border-top: 4px solid #e74c3c;
+}
+
+.modalContent {
+  margin: 1rem 0;
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #7f8c8d;
+}
+/* ... (mantén los estilos anteriores) ... */
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.confirmButton {
+  padding: 0.5rem 1.5rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.confirmButton:hover {
+  background-color: #2980b9;
+}
+
+.cancelButton {
+  padding: 0.5rem 1.5rem;
+  background-color: #f1f1f1;
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cancelButton:hover {
+  background-color: #ddd;
+}
+
+/* Estilos específicos por tipo */
+.modal.success .confirmButton {
+  background-color: #2ecc71;
+}
+
+.modal.success .confirmButton:hover {
+  background-color: #27ae60;
+}
+
+.modal.error .confirmButton {
+  background-color: #e74c3c;
+}
+
+.modal.error .confirmButton:hover {
+  background-color: #c0392b;
+}

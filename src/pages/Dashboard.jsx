@@ -5,12 +5,36 @@ import TaskList from "../components/TaskList";
 import TaskForm from "../components/TaskForm";
 import { useNavigate } from "react-router-dom";
 import styles from "./Dashboard.module.css";
+import Modal from "../components/Modal.jsx";
 
 const Dashboard = () => {
   const { user, logout } = useContext(AuthContext);
   const [tasks, setTasks] = useState([]);
   const [editingTask, setEditingTask] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [modal, setModal] = useState({
+    show: false,
+    message: "",
+    type: "info",
+    onConfirm: null,
+    confirmText: "Aceptar",
+    showCancel: true,
+  });
   const navigate = useNavigate(); //Hook para navegacion
+
+  const showModal = (config) => {
+    setModal({
+      show: true,
+      type: "info",
+      showCancel: true,
+      ...config,
+    });
+  };
+
+  const hideModal = () => {
+    setModal((prev) => ({ ...prev, show: false }));
+  };
 
   const handleCancel = () => {
     setEditingTask(null); // Esto cambiará initialData a null
@@ -22,10 +46,13 @@ const Dashboard = () => {
 
   const fetchTasks = async () => {
     try {
+      setIsLoading(true);
       const response = await api.get("/tasks");
       setTasks(response.data);
     } catch (error) {
-      console.error("Error fetching tasks:", error);
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
   //Funcion para manejar el logout
@@ -38,12 +65,21 @@ const Dashboard = () => {
   const handleSubmit = async (taskData) => {
     try {
       if (editingTask) {
+        console.log("Esto es lo que se esta editando", editingTask);
         await api.put(`/tasks/${editingTask.id}`, taskData);
+
+        await fetchTasks(); // Refrescar lista
+        showModal({
+          message: "Los cambios se guardaron correctamente",
+          type: "success",
+          showCancel: false,
+          onConfirm: hideModal,
+        });
       } else {
         await api.post("/tasks", taskData);
+        await fetchTasks(); // Refrescar lista
       }
-      fetchTasks(); // Refrescar lista
-      setEditingTask(null); // Resetear formulario
+      setEditingTask(null); // Resetear formulario solo si se estaba editando
     } catch (error) {
       console.error("Error saving task:", error);
     }
@@ -56,12 +92,30 @@ const Dashboard = () => {
 
   // Manejar eliminación
   const handleDelete = async (taskId) => {
-    try {
-      await api.delete(`/tasks/${taskId}`);
-      fetchTasks();
-    } catch (error) {
-      console.error("Error deleting task:", error);
-    }
+    showModal({
+      message: "¿Estás seguro de eliminar esta tarea?",
+      type: "error",
+      confirmText: "Eliminar",
+      onConfirm: async () => {
+        try {
+          await api.delete(`/tasks/${taskId}`);
+          fetchTasks();
+          showModal({
+            message: "Los cambios se guardaron correctamente",
+            type: "success",
+            showCancel: false,
+            onConfirm: hideModal,
+          });
+        } catch (error) {
+          showModal({
+            message: error.message,
+            type: "error",
+            showCancel: false,
+            onConfirm: hideModal,
+          });
+        }
+      },
+    });
   };
 
   return (
@@ -93,24 +147,54 @@ const Dashboard = () => {
             <h2>{editingTask ? "Editar Tarea" : "Nueva Tarea"}</h2>
           </div>
           <div className={styles.cardBody}>
-            <TaskForm onSubmit={handleSubmit} initialData={editingTask} onCancel={handleCancel} />
+            <TaskForm
+              onSubmit={handleSubmit}
+              initialData={editingTask}
+              onCancel={handleCancel}
+            />
           </div>
         </div>
 
         <div className={`${styles.taskListContainer} ${styles.card}`}>
           <div className={styles.cardHeader}>
             <h2>Mis Tareas</h2>
-            <span className={styles.taskCount}>{tasks.length} tareas</span>
+            {!isLoading && ( // <-- Mostrar contador solo cuando no está cargando
+              <span className={styles.taskCount}>{tasks.length} tareas</span>
+            )}
           </div>
           <div className={styles.cardBody}>
-            <TaskList
-              tasks={tasks}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              currentUserId={user.id} // Pasa el ID del usuario actual
-              isAdmin='admin'
-            />
+            {isLoading ? (
+              <div className={styles.loadingContainer}>
+                <div className={styles.loadingSpinner}></div>
+                <p>Cargando tareas...</p>
+              </div>
+            ) : error ? (
+              <div className={styles.errorContainer}>
+                <p>Error: {error}</p>
+                <button onClick={fetchTasks} className={styles.retryButton}>
+                  Reintentar
+                </button>
+              </div>
+            ) : (
+              <TaskList
+                tasks={tasks}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                currentUserId={user.id} // Pasa el ID del usuario actual
+                isAdmin="admin"
+              />
+            )}
           </div>
+          {modal.show && (
+            <Modal
+              message={modal.message}
+              type={modal.type}
+              onClose={hideModal}
+              onConfirm={modal.onConfirm || hideModal}
+              confirmText={modal.confirmText}
+              showCancel={modal.showCancel}
+            />
+          )}
         </div>
       </div>
     </div>

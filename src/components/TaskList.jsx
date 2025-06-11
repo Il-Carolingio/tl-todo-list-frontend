@@ -1,40 +1,27 @@
-import { useState, useEffect, useCallback } from "react"; // Importamos useState y useEffect de React
+import { useState, useEffect, useCallback, useMemo } from "react"; // Importamos useState y useEffect de React
 import styles from "./TaskList.module.css"; // Archivo CSS Modules que crearemos
 import api from "../services/api";
 
-const TaskList = ({ onEdit, onDelete, currentUserId, isAdmin = false }) => {
+const TaskList = ({tasks, onEdit, onDelete, currentUserId, isAdmin = false }) => {
   const [filter, setFilter] = useState("all"); // 'all' o 'mine'
-  const [tasks, setTasks] = useState([]);
+  //const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [completedFilter, setCompletedFilter] = useState("all"); // 'all', 'completed' o 'pending'
-  // Usamos useCallback para memorizar la función y evitar recreaciones innecesarias
-  const fetchTasks = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
 
-      const endpoint = filter === "mine" ? "/tasks?filter=mine" : "/tasks";
-      const response = await api.get(endpoint);
+  //Filtrado combinado
+  const filteredTasks = useMemo(() => {
+    return tasks.filter((task) =>{
+      //Filtro por usuario
+      const useFilter = filter === "mine" ? task.userId === currentUserId : true;
+      //Filtro pot estado de tarea completada o pendiente
+      const stateFilter = completedFilter === "all" ? 
+      true : completedFilter === "completed" ? 
+      task.completed : !task.completed;
 
-      // Verificamos que la respuesta tenga datos y sean un array
-      if (response.data && Array.isArray(response.data)) {
-        setTasks(response.data);
-      } else {
-        throw new Error("Formato de datos inválido");
-      }
-    } catch (err) {
-      setError(err.message || "Error al cargar las tareas");
-      console.error("Error fetching tasks:", err);
-      setTasks([]); // Aseguramos que tasks sea un array vacío en caso de error
-    } finally {
-      setLoading(false);
-    }
-  }, [filter]);
-
-  useEffect(() => {
-    fetchTasks();
-  }, [fetchTasks]); // Ahora depende de fetchTasks memorizado
+      return useFilter && stateFilter;
+    });
+  },[tasks, filter, completedFilter, currentUserId]);
 
   const handleFilterChange = (newFilter) => {
     if (newFilter === "all" && !isAdmin) return;
@@ -44,43 +31,6 @@ const TaskList = ({ onEdit, onDelete, currentUserId, isAdmin = false }) => {
   const handleCompletedFilterChange = (newFilter) => {
     setCompletedFilter(newFilter);
   };
-  // Filtrado combinado
-  const filteredTasks = tasks.filter((task) => {
-    // Filtro por usuario (all/mine)
-    const userFilter = filter === "mine" ? task.userId === currentUserId : true;
-
-    // Filtro por estado de completitud
-    const completionFilter =
-      completedFilter === "all"
-        ? true
-        : completedFilter === "completed"
-        ? task.completed
-        : !task.completed;
-
-    return userFilter && completionFilter;
-  });
-
-  // Renderizado condicional mejorado
-  if (loading) {
-    return (
-      <div className={styles.taskList}>
-        <div className={styles.loading}>Cargando tareas...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className={styles.taskList}>
-        <div className={styles.error}>
-          {error}
-          <button onClick={fetchTasks} className={styles.retryButton}>
-            Reintentar
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className={styles.taskList}>

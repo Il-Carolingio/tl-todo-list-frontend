@@ -31,10 +31,8 @@ const TaskForm = ({ onSubmit, initialData, onCancel }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(formData);
-    if (!initialData) {
-      // Resetear solo si es nueva tarea
-      setFormData({ title: '', description: '', completed: false });
-    }
+    console.log("Esto se esta enviando al padre",formData);
+    setFormData({ title: '', description: '', completed: false });
   };
   // funcion para cancelar
   const handleCancel = () =>{
